@@ -28,6 +28,28 @@ describe('Rich Content', () => {
     expect(heading.firstElementChild).to.equal(quote);
   });
 
+  it('hangs a leading straight double quote into its own span', async () => {
+    document.body.innerHTML = await readFile({ path: './mocks/straight-quote.html' });
+    const block = document.querySelector('.rich-content');
+    init(block);
+
+    const heading = block.querySelector('.content h2');
+    const quote = heading.querySelector('.opening-quote');
+    expect(quote).to.exist;
+    expect(quote.textContent).to.equal('"');
+    expect(heading.textContent).to.equal('"Great things ahead');
+    expect(heading.firstElementChild).to.equal(quote);
+  });
+
+  it('does not hang a leading straight single quote (apostrophe guard)', async () => {
+    document.body.innerHTML = '<main><div class="section"><div class="rich-content"><div><div><h2>\'90s nostalgia</h2></div></div></div></div></main>';
+    const block = document.querySelector('.rich-content');
+    init(block);
+
+    expect(block.querySelector('.opening-quote')).to.be.null;
+    expect(block.querySelector('h2').textContent).to.equal('\'90s nostalgia');
+  });
+
   it('does not add an opening-quote span when the heading has no opening quote', async () => {
     document.body.innerHTML = await readFile({ path: './mocks/no-quote.html' });
     const block = document.querySelector('.rich-content');
