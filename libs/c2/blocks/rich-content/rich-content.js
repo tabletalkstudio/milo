@@ -3,10 +3,13 @@ import { createTag } from '../../../utils/utils.js';
 
 function hangOpeningQuote(header) {
   if (!header) return;
-  // \p{Pi} = curly quotes (“ ‘) and guillemets («). Add the straight double quote (")
-  // so authored straight quotes hang too. The straight single quote (') is intentionally
-  // excluded to avoid mangling headings like "'90s nostalgia" / "'Twas".
-  const openingQuotes = /^(\p{Pi}|")/u;
+  // \p{Pi} = high curly quotes (“ ‘) and guillemets (« ‹). Also match opening quotes that
+  // Unicode files under Ps/Po instead of Pi: straight " (U+0022); German / Central- &
+  // Eastern-European low-9 „ ‚ (U+201E, U+201A); CJK corner brackets 「 『 ｢ ﹁ ﹃
+  // (U+300C, U+300E, U+FF62, U+FE41, U+FE43); full-width ＂ (U+FF02); reversed low-9 ⹂
+  // (U+2E42). The straight single quote (') is intentionally excluded to avoid mangling
+  // headings like "'90s nostalgia" / "'Twas".
+  const openingQuotes = /^(\p{Pi}|["„‚「『｢﹁﹃＂⹂])/u;
   const match = header.textContent.match(openingQuotes);
   if (!match) return;
   const quote = match[1];
